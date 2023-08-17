@@ -47,9 +47,9 @@ const Gameboard = (function () {
         return true;
     }
 
-    const reset = function(){
-        for (let i = 0; i < 3; i++){
-            for (let j = 0; j<3; j++){
+    const reset = function () {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
                 board[i][j].setValue('');
             }
         }
@@ -61,9 +61,6 @@ const Gameboard = (function () {
         console.log(boardWithBoxValue);
         return boardWithBoxValue;
     }
-
-
-    return { clickBoard, printBoard, getBoard, reset};
 })()
 
 const player = function (name, token) {
@@ -77,16 +74,23 @@ const player = function (name, token) {
         return playerToken;
     }
 
-    return { getName, getToken };
+    const setName = function (name) {
+        playerName = name;
+    }
+
+    return { getName, getToken, setName };
 }
 
 const workflow = (function () {
     const board = Gameboard;
     const boxesDom = document.querySelectorAll('.box');
-    const players = document.querySelectorAll('.player');
+    const playerDivs = document.querySelectorAll('div.player');
+    const playerHeadings = document.querySelectorAll('h2.player');
+    const resetButton = document.querySelector('button.start');
 
-    player1 = player('arjun', 'X');
-    player2 = player('karthik', 'O');
+    //Default Player 1 and 2 values
+    player1 = player('Player 1', 'X');
+    player2 = player('Player 2', 'O');
     currentToken = 'X';
 
     //updates the dom Box to the code box values
@@ -100,62 +104,71 @@ const workflow = (function () {
             box.innerText = board.getBoard()[rowIndex][colIndex].getValue();
         })
 
-        players[0].querySelector('.token').innerText = player1.getToken();
-        players[1].querySelector('.token').innerText = player2.getToken();
+        playerDivs[0].querySelector('.token').innerText = player1.getToken();
+        playerDivs[1].querySelector('.token').innerText = player2.getToken();
 
+        playerHeadings[0].innerText = player1.getName();
+        playerHeadings[1].innerText = player2.getName();
     }
 
-    const switchToken = function(){
-        currentToken = player1.getToken()===currentToken ? player2.getToken() : player1.getToken();
+    const switchToken = function () {
+        currentToken = player1.getToken() === currentToken ? player2.getToken() : player1.getToken();
         console.log('token switched to ' + currentToken);
     }
 
-    const getToken = function(){
+    const getToken = function () {
         return currentToken;
     }
-    const resetToken = function(){
+    const resetToken = function () {
         currentToken = 'X';
     }
 
-    const playRound = function(row, column){
+    const playRound = function (row, column) {
         //validation for row and column inputs
-        if (!(row<3 && column<3)){
+        if (!(row < 3 && column < 3)) {
             return;
         }
-        if (board.clickBoard(currentToken, row, column)){
+        if (board.clickBoard(currentToken, row, column)) {
             switchToken();
             render();
 
             let gameResult = gameOver();
             console.log(gameResult);
-            if (gameResult === 'T'){
-                outputTie();
-                clearBoard();
-                resetToken();
-            }
-            else if (gameResult === 'X'){
-                outputWin(player1);
-                clearBoard();
-                resetToken();
-            }
-            else if (gameResult === 'O'){
-                outputWin(player2);
-                clearBoard();
+
+            const possibleResults = ['X', 'O', 'T'];
+
+            if (possibleResults.includes(gameResult)){
+                output(gameResult);
                 resetToken();
             }
 
         };
     }
 
-    const outputTie = function(){
-        alert("tied game");
+    const output = function(token) {
+        const dialogEnd = document.querySelector(".gameEnd");
+        const playerName = document.querySelector(".playerName");
+        if (token === 'X'){
+            //code if player 1 won
+            //output something saying X won
+            playerName.innerText = player1.getName() + " has Won!";
+        }
+
+        else if (token === 'O'){
+            //code if player 2 won
+            playerName.innerText = player2.getName() + " has Won!";
+        }
+
+        else{
+            //code if tie
+            playerName.innerText = "It was a Tie!"
+        }
+
+        dialogEnd.showModal();
+
     }
 
-    const outputWin = function(player){
-        alert(player.getName() + " won");
-    }
-
-    const detectClick = function(){
+    const detectClick = function () {
         boxesDom.forEach(box => {
             box.addEventListener('click', (event) => {
                 let row = event.target.dataset.row;
@@ -164,40 +177,34 @@ const workflow = (function () {
             })
         })
     }
-
-    const clearBoard = function(){
-        board.reset();
-        render();
-    }
-
-    const gameOver = function(){
+    const gameOver = function () {
         //detects if the game is over
         //can return X, O, '' or T
-        
+
         let boardString = board.getBoard().map(row => row.map(box => box.getValue()));
 
         //check 3 in a row
         //Check Row
-        for (let i = 0; i < 3; i++){
-            if (boardString[i][0]===boardString[i][1]&& boardString[i][1]===boardString[i][2] && boardString[i][0] != ''){
+        for (let i = 0; i < 3; i++) {
+            if (boardString[i][0] === boardString[i][1] && boardString[i][1] === boardString[i][2] && boardString[i][0] != '') {
                 console.log(i);
                 return boardString[i][0];
             }
         }
         //Check Column
-        for (let i = 0; i < 3; i++){
-            if (boardString[0][i]===boardString[1][i]&&boardString[1][i]===boardString[2][i] && boardString[0][i] != ''){
+        for (let i = 0; i < 3; i++) {
+            if (boardString[0][i] === boardString[1][i] && boardString[1][i] === boardString[2][i] && boardString[0][i] != '') {
                 return boardString[0][i];
             }
         }
         //Check Diagonal
-        if (boardString[1][1] != '' && (boardString[0][0] === boardString[1][1]&& boardString[1][1] === boardString[2][2]) || (boardString[0][2] === boardString[1][1]&& boardString[1][1] === boardString[2][0])){
+        if (boardString[1][1] != '' && (boardString[0][0] === boardString[1][1] && boardString[1][1] === boardString[2][2]) || (boardString[0][2] === boardString[1][1] && boardString[1][1] === boardString[2][0])) {
             return boardString[1][1];
         }
 
-        for (let i = 0; i < 3; i++){
-            for (let j = 0; j<3; j++){
-                if (boardString[i][j] === ''){
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (boardString[i][j] === '') {
                     return boardString[i][j];
                 }
             }
@@ -206,11 +213,38 @@ const workflow = (function () {
         return 'T';
     }
 
-    
+    const getNames = function () { //gets the name from the dialog/form and puts them in the left/right
+        const dialog = document.querySelector("dialog.open");
+        const form = document.querySelector("form");
+        let first,second;
+        form.reset();
+        dialog.showModal();
+
+        form.addEventListener("submit", (e)=>{
+            e.preventDefault(); 
+            first = document.querySelector("#player1Input");
+            second = document.querySelector("#player2Input");
+            dialog.close();
+            player1.setName(first.value);
+            player2.setName(second.value);
+            render();
+        })
+    }
+
+    const clearBoard = function () {
+        board.reset();
+        getNames();
+        render();
+    }
+
+
+    const resetGame = (function () {
+        resetButton.addEventListener('click', clearBoard); //clears the visual board
+        resetToken();//sets the token back to 'X'
+
+    })()
 
     render();
+    getNames();
     detectClick();
-
-
-    return {render, getToken, switchToken, playRound, detectClick, gameOver, clearBoard};
 })()

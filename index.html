@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <script src = 'script.js' defer></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="header">
+        <h1>Tic-Tac-Toe</h1>
+    </div>
+
+    <div class="start">
+        <button class = 'start'>Start/Reset</button>
+    </div>
+
+    <dialog class = 'open'>
+        <form action="">
+            <input type="text" placeholder = "Enter player 1 name:" id = 'player1Input' required >
+            <input type="text" placeholder = "Enter player 2 name:" id = 'player2Input' required>
+            <button type = 'submit' id = 'submitButton'>Enter</button>
+        </form>
+    </dialog>
+
+    <dialog class = "gameEnd" >
+        <div class = "playerName"></div>
+    </dialog>
+
+    <div class = "container">
+        <div class="player first">
+            <h2 class="player first">Player 1</h2>
+            <div class="token"></div>
+        </div>
+
+        <div class="gameboard">
+                <div class="box" data-row="0" data-col="0"></div>
+                <div class="box" data-row="0" data-col="1"></div>
+                <div class="box" data-row="0" data-col="2"></div>
+
+                <div class="box" data-row="1" data-col="0"></div>
+                <div class="box" data-row="1" data-col="1"></div>
+                <div class="box" data-row="1" data-col="2"></div>
+
+                <div class="box" data-row="2" data-col="0"></div>
+                <div class="box" data-row="2" data-col="1"></div>
+                <div class="box" data-row="2" data-col="2"></div>
+
+        </div>
+
+        <div class="player second">
+            <h2 class="player second">Player 2</h2>
+            <div class="token"></div>
+        </div>
+    </div>
+</body>
+</html>
